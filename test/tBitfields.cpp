@@ -48,4 +48,8 @@ CPP_TEST( t0 )
     TEST_TRUE(Foo::AsEnum<0>::value == FooEnum::A);
     TEST_TRUE(Foo::AsEnum<1>::value == FooEnum::B);
     TEST_TRUE(Foo::AsEnum<2>::value == FooEnum::C);
+
+    TEST_TRUE(0 == Foo::AsInt<FooEnum::A>::value);
+    TEST_TRUE(1 == Foo::AsInt<FooEnum::B>::value);
+    TEST_TRUE(2 == Foo::AsInt<FooEnum::C>::value);
 }
