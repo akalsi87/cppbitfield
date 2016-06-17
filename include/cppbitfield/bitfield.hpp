@@ -212,7 +212,7 @@ namespace cppbitfield {
             static const IntType asInt = AsInt<X>::value;
             static const int offset = FieldOffset<asInt>::value;
             static const int length = FieldLength<asInt>::value;
-            static const auto mask = ~((ALL_ONES) << length);
+            static const StorageType mask = ~((ALL_ONES) << length);
             return static_cast<Y>((m_bits >> offset) & mask);
         }
 
@@ -222,11 +222,11 @@ namespace cppbitfield {
             static const IntType asInt = AsInt<X>::value;
             static const int offset = FieldOffset<asInt>::value;
             static const int length = FieldLength<asInt>::value;
-            static const auto mask = ~((ALL_ONES) << length);
+            static const StorageType mask = ~((ALL_ONES) << length);
             auto valtosettrunc = static_cast<StorageType>(val) & mask;
             CPPBITFIELD_ASSERT("Value too large for bitfield length." &&
                                (static_cast<StorageType>(val) == valtosettrunc));
-            m_bits = (m_bits & (~mask << offset)) | (valtosettrunc << offset);
+            m_bits = (m_bits & ~(mask << offset)) | (valtosettrunc << offset);
         }
 
         template <EnumType X>
