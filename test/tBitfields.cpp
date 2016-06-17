@@ -9,31 +9,22 @@
 
 CPP_TEST( t0 )
 {
-    DECLARE_BITFIELD_ENUM(
+    DEFINE_BITFIELD_ENUM(
          FooEnum,
                A,
                B,
                C);
 
-    TEST_TRUE(static_cast<int>(FooEnum::A) == 0);
-
-    DECLARE_BITFIELD_SIZES(
+    DEFINE_BITFIELD_SIZES(
         FooSizes,
                1,
                2,
                3);
 
-    TEST_TRUE(FooSizes::Get<0>::value == 1);
-    TEST_TRUE(FooSizes::Get<1>::value == 2);
-    TEST_TRUE(FooSizes::Get<2>::value == 3);
-    TEST_TRUE(FooSizes::SumTill<0>::value == 0);
-    TEST_TRUE(FooSizes::SumTill<1>::value == 1);
-    TEST_TRUE(FooSizes::SumTill<2>::value == 3);
-
-    DECLARE_BITSET(Foo, FooEnum, FooSizes);
-
-    Foo x;
-    static_cast<void>(&x);
+    DEFINE_BITFIELDS(
+        Foo,
+        FooEnum,
+        FooSizes);
 
     TEST_TRUE(Foo::NumFields == 3);
 
@@ -52,4 +43,27 @@ CPP_TEST( t0 )
     TEST_TRUE(0 == Foo::AsInt<FooEnum::A>::value);
     TEST_TRUE(1 == Foo::AsInt<FooEnum::B>::value);
     TEST_TRUE(2 == Foo::AsInt<FooEnum::C>::value);
+
+    auto isCorrectType = std::is_same<uint8_t, Foo::StorageType>::value;
+    TEST_TRUE(isCorrectType);
+
+    Foo x;
+    int aVal = x.get<FooEnum::A, int>();
+    TEST_TRUE(aVal == 0);
+    int bVal = x.get<FooEnum::B, int>();
+    TEST_TRUE(bVal == 0);
+    int cVal = x.get<FooEnum::C, int>();
+    TEST_TRUE(cVal == 0);
+
+    x.set<FooEnum::C>(7);
+    cVal = x.get<FooEnum::C, int>();
+    TEST_TRUE(cVal == 7);
+
+    x.set<FooEnum::C>(true);
+    cVal = x.get<FooEnum::C, int>();
+    TEST_TRUE(cVal == 1);
+
+    x.set<FooEnum::C>(4);
+    cVal = x.get<FooEnum::C, int>();
+    TEST_TRUE(cVal == 4);
 }
