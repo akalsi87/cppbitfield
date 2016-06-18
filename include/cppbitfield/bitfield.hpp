@@ -71,7 +71,7 @@ namespace cppbitfield {
             static const int value = (Idx == 0) ? 0 : (S + SumTillImpl<Idx - 1, Sizes...>::value);
         };
 
-        template <bool GE8, bool GE16, bool GE32>
+        template <bool GT8, bool GT16, bool GT32>
         struct SelectorImpl;
 
         template <>
@@ -101,11 +101,11 @@ namespace cppbitfield {
         template <int Size>
         struct StorageTypeSelector
         {
-            static const bool GE_8  = Size >=  8;
-            static const bool GE_16 = Size >= 16;
-            static const bool GE_32 = Size >= 32;
+            static const bool GT_8  = Size >  8;
+            static const bool GT_16 = Size > 16;
+            static const bool GT_32 = Size > 32;
 
-            using type = typename SelectorImpl<GE_8, GE_16, GE_32>::type;
+            using type = typename SelectorImpl<GT_8, GT_16, GT_32>::type;
         };
 
     } // namespace detail
@@ -172,7 +172,12 @@ namespace cppbitfield {
         using AsInt = typename Traits::template AsInt<X>;
 
         template <IntType X>
-        using AsEnum = typename Traits::template AsEnum<X>;
+        struct AsEnum
+        {
+            static_assert(X >= 0, "Integer value must be a valid enum value.");
+            static_assert(X < NumFields, "Integer value must be a valid enum value.");
+            static const EnumType value = Traits::template AsEnum<X>::value;
+        };
 
         template <int X>
         using FieldLength = typename Sizes::template Get<X>;
@@ -206,10 +211,12 @@ namespace cppbitfield {
             return *this;
         }
 
-        template <EnumType X, class Y>
+        template <EnumType X, class Y = StorageType>
         Y get() const
         {
             static const IntType asInt = AsInt<X>::value;
+            // validate enum value
+            static_cast<void>(AsEnum<asInt>::value); 
             static const int offset = FieldOffset<asInt>::value;
             static const int length = FieldLength<asInt>::value;
             static const StorageType mask = ~((ALL_ONES) << length);
@@ -220,13 +227,15 @@ namespace cppbitfield {
         void set(Y val)
         {
             static const IntType asInt = AsInt<X>::value;
+            // validate enum value
+            static_cast<void>(AsEnum<asInt>::value);
             static const int offset = FieldOffset<asInt>::value;
             static const int length = FieldLength<asInt>::value;
             static const StorageType mask = ~((ALL_ONES) << length);
-            auto valtosettrunc = static_cast<StorageType>(val) & mask;
+            auto valtrunc = static_cast<StorageType>(val) & mask;
             CPPBITFIELD_ASSERT("Value too large for bitfield length." &&
-                               (static_cast<StorageType>(val) == valtosettrunc));
-            m_bits = (m_bits & ~(mask << offset)) | (valtosettrunc << offset);
+                               (static_cast<StorageType>(val) == valtrunc));
+            m_bits = (m_bits & ~(mask << offset)) | (valtrunc << offset);
         }
 
         template <EnumType X>

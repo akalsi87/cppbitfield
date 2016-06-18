@@ -48,36 +48,35 @@ CPP_TEST( t0 )
     TEST_TRUE(isCorrectType);
 
     Foo x;
-    int aVal = x.get<FooEnum::A, int>();
+    auto aVal = x.get<FooEnum::A>();
     TEST_TRUE(aVal == 0);
-    int bVal = x.get<FooEnum::B, int>();
+    auto bVal = x.get<FooEnum::B>();
     TEST_TRUE(bVal == 0);
-    int cVal = x.get<FooEnum::C, int>();
+    auto cVal = x.get<FooEnum::C>();
     TEST_TRUE(cVal == 0);
 
     x.set<FooEnum::A>(1);
     x.set<FooEnum::B>(2);
-
     x.set<FooEnum::C>(7);
-    aVal = x.get<FooEnum::A, int>();
-    bVal = x.get<FooEnum::B, int>();
-    cVal = x.get<FooEnum::C, int>();
+    aVal = x.get<FooEnum::A>();
+    bVal = x.get<FooEnum::B>();
+    cVal = x.get<FooEnum::C>();
     TEST_TRUE(aVal == 1);
     TEST_TRUE(bVal == 2);
     TEST_TRUE(cVal == 7);
 
     x.set<FooEnum::C>(true);
-    aVal = x.get<FooEnum::A, int>();
-    bVal = x.get<FooEnum::B, int>();
-    cVal = x.get<FooEnum::C, int>();
+    aVal = x.get<FooEnum::A>();
+    bVal = x.get<FooEnum::B>();
+    cVal = x.get<FooEnum::C>();
     TEST_TRUE(aVal == 1);
     TEST_TRUE(bVal == 2);
     TEST_TRUE(cVal == 1);
 
     x.set<FooEnum::C>(4);
-    aVal = x.get<FooEnum::A, int>();
-    bVal = x.get<FooEnum::B, int>();
-    cVal = x.get<FooEnum::C, int>();
+    aVal = x.get<FooEnum::A>();
+    bVal = x.get<FooEnum::B>();
+    cVal = x.get<FooEnum::C>();
     TEST_TRUE(aVal == 1);
     TEST_TRUE(bVal == 2);
     TEST_TRUE(cVal == 4);
