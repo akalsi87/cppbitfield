@@ -78,24 +78,28 @@ namespace cppbitfield {
         struct SelectorImpl<0, 0, 0>
         {
             using type = uint8_t;
+            static const type max_value = 0xFF;
         };
 
         template <>
         struct SelectorImpl<1, 0, 0>
         {
             using type = uint16_t;
+            static const type max_value = 0xFFFF;
         };
 
         template <>
         struct SelectorImpl<1, 1, 0>
         {
             using type = uint32_t;
+            static const type max_value = 0xFFFFFFFF;
         };
 
         template <>
         struct SelectorImpl<1, 1, 1>
         {
             using type = uint64_t;
+            static const type max_value = 0xFFFFFFFFFFFFFFFF;
         };
 
         template <int Size>
@@ -106,6 +110,7 @@ namespace cppbitfield {
             static const bool GT_32 = Size > 32;
 
             using type = typename SelectorImpl<GT_8, GT_16, GT_32>::type;
+            static const type max_value = SelectorImpl<GT_8, GT_16, GT_32>::max_value;
         };
 
     } // namespace detail
@@ -195,7 +200,7 @@ namespace cppbitfield {
       private:
         StorageType m_bits;
 
-        static const StorageType ALL_ONES = std::numeric_limits<StorageType>::max();
+        static const StorageType ALL_ONES = detail::StorageTypeSelector<NumBits>::max_value;
         static const StorageType ONE = static_cast<StorageType>(1);
         static const StorageType ZERO = static_cast<StorageType>(0);
       public:
@@ -259,9 +264,9 @@ namespace cppbitfield {
     DEFINE_BITFIELD_ENUM_X(X, Y = 0  BITFIELD_VA_ARGS_X(__VA_ARGS__), __NUM_FIELDS)
 
 #define DEFINE_BITFIELD_SIZES(X, ...) \
-    using X = cppbitfield::BitFieldSizes<__VA_ARGS__>;
+    using X = cppbitfield::BitFieldSizes<__VA_ARGS__>
 
 #define DEFINE_BITFIELDS(N, X, Y) \
-    using N = cppbitfield::BitFields<X, Y>;
+    using N = cppbitfield::BitFields<X, Y>
 
 #endif/*CPPBITFIELD_BITFIELD_HPP*/
